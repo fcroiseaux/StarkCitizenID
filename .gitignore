@@ -1,0 +1,33 @@
+# Build artifacts
+target/
+build/
+dist/
+
+# Scarb artifacts
+.scarb/
+
+# Starknet Foundry artifacts
+target/
+snforge_test_artifacts/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+
+# Cairo
+.cairo/
+
+# Logs
+*.log
+logs/
+
+# Dependencies
+node_modules/
