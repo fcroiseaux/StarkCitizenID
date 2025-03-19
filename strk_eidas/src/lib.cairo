@@ -58,20 +58,14 @@ pub trait IIdentityRegistry<TContractState> {
 
     /// Get identity information
     fn get_identity_info(self: @TContractState, address: starknet::ContractAddress) -> Identity;
-
-    /// Set or update contract administrator
-    fn set_admin(ref self: TContractState, new_admin: starknet::ContractAddress);
-
-    /// Get the current contract administrator
-    fn get_admin(self: @TContractState) -> starknet::ContractAddress;
     
-    /// Emergency function to revoke verification (admin only)
+    /// Emergency function to revoke verification (owner only)
     fn admin_revoke_verification(ref self: TContractState, address: starknet::ContractAddress) -> bool;
     
     /// For testing purposes only: force an identity to be marked as expired
     fn force_expire_identity(ref self: TContractState, address: starknet::ContractAddress) -> bool;
     
-    /// Add or update a trusted identity provider (admin only)
+    /// Add or update a trusted identity provider (owner only)
     fn add_identity_provider(
         ref self: TContractState, 
         id: felt252, 
@@ -79,7 +73,7 @@ pub trait IIdentityRegistry<TContractState> {
         public_key: felt252
     ) -> bool;
     
-    /// Deactivate a trusted identity provider (admin only)
+    /// Deactivate a trusted identity provider (owner only)
     fn deactivate_identity_provider(ref self: TContractState, id: felt252) -> bool;
     
     /// Get identity provider information
@@ -87,22 +81,30 @@ pub trait IIdentityRegistry<TContractState> {
     
     /// Check if a provider is trusted and active
     fn is_trusted_provider(self: @TContractState, id: felt252) -> bool;
+
+    // Owner management
+    fn owner(self: @TContractState) -> starknet::ContractAddress;
+    fn transfer_ownership(ref self: TContractState, new_owner: starknet::ContractAddress);
+    fn renounce_ownership(ref self: TContractState);
 }
 
 /// The main Identity Registry contract implementation
 #[starknet::contract]
 mod IdentityRegistry {
     use starknet::{ContractAddress, get_caller_address, get_block_timestamp};
-    use starknet::storage::{StorageMapReadAccess, StorageMapWriteAccess, StoragePointerReadAccess, StoragePointerWriteAccess};
+    use starknet::storage::{StorageMapReadAccess, StorageMapWriteAccess};
     use core::num::traits::Zero;
     use super::{Identity, IdentityProvider};
 
     #[storage]
     struct Storage {
-        admin: ContractAddress,
+        // Identity storage
         identities: starknet::storage::Map::<ContractAddress, Identity>,
         hash_to_address: starknet::storage::Map::<felt252, ContractAddress>,
         identity_providers: starknet::storage::Map::<felt252, IdentityProvider>,
+        
+        // Owner storage - using a map with a single key for contract owner
+        owner: starknet::storage::Map::<felt252, ContractAddress>,
     }
 
     #[event]
@@ -112,9 +114,9 @@ mod IdentityRegistry {
         IdentityRevoked: IdentityRevoked,
         IdentityUpdated: IdentityUpdated,
         ExpirationUpdated: ExpirationUpdated,
-        AdminChanged: AdminChanged,
         IdentityProviderAdded: IdentityProviderAdded,
         IdentityProviderDeactivated: IdentityProviderDeactivated,
+        OwnershipTransferred: OwnershipTransferred,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -141,12 +143,6 @@ mod IdentityRegistry {
         address: ContractAddress,
         expiration: u64,
     }
-
-    #[derive(Drop, starknet::Event)]
-    struct AdminChanged {
-        old_admin: ContractAddress,
-        new_admin: ContractAddress,
-    }
     
     #[derive(Drop, starknet::Event)]
     struct IdentityProviderAdded {
@@ -158,10 +154,22 @@ mod IdentityRegistry {
     struct IdentityProviderDeactivated {
         id: felt252,
     }
+    
+    #[derive(Drop, starknet::Event)]
+    struct OwnershipTransferred {
+        previous_owner: ContractAddress,
+        new_owner: ContractAddress,
+    }
+
+    // Owner key in the map
+    const OWNER_KEY: felt252 = 'OWNER';
 
     #[constructor]
-    fn constructor(ref self: ContractState, admin_address: ContractAddress) {
-        self.admin.write(admin_address);
+    fn constructor(ref self: ContractState, owner_address: ContractAddress) {
+        // Initialize owner
+        self.owner.write(OWNER_KEY, owner_address);
+        let zero_addr: ContractAddress = Zero::zero();
+        self.emit(OwnershipTransferred { previous_owner: zero_addr, new_owner: owner_address });
     }
 
     #[abi(embed_v0)]
@@ -191,7 +199,7 @@ mod IdentityRegistry {
             
             // Verify the signature from the identity provider
             // The message_hash should contain the hash of the user's identity data
-            let is_valid = InternalFunctions::verify_provider_signature(
+            let is_valid = self.verify_provider_signature(
                 provider.public_key,
                 message_hash,
                 signature_r,
@@ -289,7 +297,7 @@ mod IdentityRegistry {
             assert(provider.is_active, 'Provider not active');
             
             // Verify the signature from the identity provider
-            let is_valid = InternalFunctions::verify_provider_signature(
+            let is_valid = self.verify_provider_signature(
                 provider.public_key,
                 message_hash,
                 signature_r,
@@ -321,49 +329,61 @@ mod IdentityRegistry {
         fn get_identity_info(self: @ContractState, address: ContractAddress) -> Identity {
             self.identities.read(address)
         }
-
-        /// Set or update contract administrator
-        fn set_admin(ref self: ContractState, new_admin: ContractAddress) {
-            let caller = get_caller_address();
-            let current_admin = self.admin.read();
+        
+        /// Emergency function to revoke verification (owner only)
+        fn admin_revoke_verification(ref self: ContractState, address: ContractAddress) -> bool {
+            // Only owner can call this function
+            self.assert_only_owner();
             
-            // Only the current admin can set a new admin
-            assert(caller == current_admin, 'Not authorized');
+            let identity = self.identities.read(address);
             
-            // Set new admin
-            self.admin.write(new_admin);
+            // Check if identity exists
+            assert(!identity.address.is_zero(), 'Identity does not exist');
+            
+            // Create updated identity
+            let updated_identity = Identity {
+                verified: false,
+                ..identity
+            };
+            
+            self.identities.write(address, updated_identity);
             
             // Emit event
-            self.emit(AdminChanged { old_admin: current_admin, new_admin });
-        }
-
-        /// Get the current contract administrator
-        fn get_admin(self: @ContractState) -> ContractAddress {
-            self.admin.read()
-        }
-        
-        /// Emergency function to revoke verification (admin only)
-        fn admin_revoke_verification(ref self: ContractState, address: ContractAddress) -> bool {
-            InternalFunctions::admin_revoke_verification(ref self, address)
+            self.emit(IdentityRevoked { address });
+            
+            true
         }
         
         /// For testing purposes only: force an identity to be marked as expired
         fn force_expire_identity(ref self: ContractState, address: ContractAddress) -> bool {
-            InternalFunctions::force_expire_identity(ref self, address)
+            // Only owner can call this function
+            self.assert_only_owner();
+            
+            let identity = self.identities.read(address);
+            
+            // Check if identity exists
+            assert(!identity.address.is_zero(), 'Identity does not exist');
+            
+            // Create updated identity with expiration in the past
+            let updated_identity = Identity {
+                expiration: 1, // Set to a very low value (past)
+                ..identity
+            };
+            
+            self.identities.write(address, updated_identity);
+            
+            true
         }
         
-        /// Add or update a trusted identity provider (admin only)
+        /// Add or update a trusted identity provider (owner only)
         fn add_identity_provider(
             ref self: ContractState, 
             id: felt252, 
             name: felt252, 
             public_key: felt252
         ) -> bool {
-            let caller = get_caller_address();
-            let admin = self.admin.read();
-            
-            // Only admin can call this function
-            assert(caller == admin, 'Not authorized');
+            // Only owner can call this function
+            self.assert_only_owner();
             
             // Add or update provider
             let provider = IdentityProvider {
@@ -382,13 +402,10 @@ mod IdentityRegistry {
             true
         }
         
-        /// Deactivate a trusted identity provider (admin only)
+        /// Deactivate a trusted identity provider (owner only)
         fn deactivate_identity_provider(ref self: ContractState, id: felt252) -> bool {
-            let caller = get_caller_address();
-            let admin = self.admin.read();
-            
-            // Only admin can call this function
-            assert(caller == admin, 'Not authorized');
+            // Only owner can call this function
+            self.assert_only_owner();
             
             let provider = self.identity_providers.read(id);
             
@@ -424,14 +441,39 @@ mod IdentityRegistry {
             
             provider.is_active
         }
+        
+        // Owner management functions
+
+        /// Get the current contract owner
+        fn owner(self: @ContractState) -> ContractAddress {
+            self.owner.read(OWNER_KEY)
+        }
+
+        /// Transfer ownership to a new address
+        fn transfer_ownership(ref self: ContractState, new_owner: ContractAddress) {
+            self.assert_only_owner();
+            assert(!new_owner.is_zero(), 'Zero address not allowed');
+            let previous_owner = self.owner.read(OWNER_KEY);
+            self.owner.write(OWNER_KEY, new_owner);
+            self.emit(OwnershipTransferred { previous_owner, new_owner });
+        }
+
+        /// Renounce ownership by setting owner to zero address
+        fn renounce_ownership(ref self: ContractState) {
+            self.assert_only_owner();
+            let previous_owner = self.owner.read(OWNER_KEY);
+            let zero_addr: ContractAddress = Zero::zero();
+            self.owner.write(OWNER_KEY, zero_addr);
+            self.emit(OwnershipTransferred { previous_owner, new_owner: zero_addr });
+        }
     }
 
-    // Internal functions
     #[generate_trait]
     impl InternalFunctions of InternalFunctionsTrait {
         /// Verify the signature from an identity provider
         /// Uses Starknet's built-in secp256 signature verification
         fn verify_provider_signature(
+            self: @ContractState,
             public_key: felt252,
             message_hash: felt252,
             signature_r: felt252,
@@ -459,55 +501,11 @@ mod IdentityRegistry {
             return true;
         }
         
-        /// Emergency function to revoke verification (admin only)
-        fn admin_revoke_verification(ref self: ContractState, address: ContractAddress) -> bool {
+        /// Check if the caller is the contract owner
+        fn assert_only_owner(ref self: ContractState) {
             let caller = get_caller_address();
-            let admin = self.admin.read();
-            
-            // Only admin can call this function
-            assert(caller == admin, 'Not authorized');
-            
-            let identity = self.identities.read(address);
-            
-            // Check if identity exists
-            assert(!identity.address.is_zero(), 'Identity does not exist');
-            
-            // Create updated identity
-            let updated_identity = Identity {
-                verified: false,
-                ..identity
-            };
-            
-            self.identities.write(address, updated_identity);
-            
-            // Emit event
-            self.emit(IdentityRevoked { address });
-            
-            true
-        }
-
-        /// For testing purposes only: force an identity to be marked as expired
-        fn force_expire_identity(ref self: ContractState, address: ContractAddress) -> bool {
-            let caller = get_caller_address();
-            let admin = self.admin.read();
-            
-            // Only admin can call this function
-            assert(caller == admin, 'Not authorized');
-            
-            let identity = self.identities.read(address);
-            
-            // Check if identity exists
-            assert(!identity.address.is_zero(), 'Identity does not exist');
-            
-            // Create updated identity with expiration in the past
-            let updated_identity = Identity {
-                expiration: 1, // Set to a very low value (past)
-                ..identity
-            };
-            
-            self.identities.write(address, updated_identity);
-            
-            true
+            let owner = self.owner.read(OWNER_KEY);
+            assert(caller == owner, 'Caller is not the owner');
         }
     }
 }
