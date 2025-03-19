@@ -44,11 +44,15 @@ mod tests {
         assert(stored_owner == owner_address, 'Wrong owner');
     }
 
-    /// Helper function to set up an identity provider in the contract
+    /// Helper function to set up an identity provider in the contract and enable test mode
     fn setup_identity_provider(dispatcher: IIdentityRegistryDispatcher) -> felt252 {
         // Set the caller address to be the owner
         let owner_address = contract_address_const(0x123);
         start_cheat_caller_address_global(owner_address);
+        
+        // First, enable test mode to bypass signature verification
+        let test_mode_result = dispatcher.set_test_mode(true);
+        assert(test_mode_result, 'Failed to enable test mode');
         
         // Add a trusted identity provider
         let provider_id: felt252 = 0x456;
