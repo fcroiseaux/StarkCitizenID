@@ -10,6 +10,7 @@ mod tests {
     start_cheat_block_timestamp_global, stop_cheat_block_timestamp_global
 };
     use strk_eidas::{IIdentityRegistryDispatcher, IIdentityRegistryDispatcherTrait};
+    use openzeppelin::access::ownable::interface::{IOwnableDispatcher, IOwnableDispatcherTrait};
 
     /// Helper function to convert felt252 values to ContractAddress type
     fn contract_address_const(value: felt252) -> ContractAddress {
@@ -34,11 +35,12 @@ mod tests {
     #[test]
     fn test_contract_deployment() {
         // Deploy a new contract instance
-        let (_contract_address, dispatcher) = deploy_contract();
+        let (contract_address, _dispatcher) = deploy_contract();
         
-        // Test owner address is set correctly
+        // Test owner address is set correctly using the Ownable interface
         let owner_address = contract_address_const(0x123);
-        let stored_owner = dispatcher.owner();
+        let ownable_dispatcher = IOwnableDispatcher { contract_address };
+        let stored_owner = ownable_dispatcher.owner();
         assert(stored_owner == owner_address, 'Wrong owner');
     }
 

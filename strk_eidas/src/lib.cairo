@@ -81,11 +81,6 @@ pub trait IIdentityRegistry<TContractState> {
     
     /// Check if a provider is trusted and active
     fn is_trusted_provider(self: @TContractState, id: felt252) -> bool;
-
-    // Owner management
-    fn owner(self: @TContractState) -> starknet::ContractAddress;
-    fn transfer_ownership(ref self: TContractState, new_owner: starknet::ContractAddress);
-    fn renounce_ownership(ref self: TContractState);
 }
 
 /// The main Identity Registry contract implementation
@@ -95,6 +90,14 @@ mod IdentityRegistry {
     use starknet::storage::{StorageMapReadAccess, StorageMapWriteAccess};
     use core::num::traits::Zero;
     use super::{Identity, IdentityProvider};
+    use openzeppelin::access::ownable::OwnableComponent;
+
+    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+
+    #[abi(embed_v0)]
+    impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
+    
+    impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
     #[storage]
     struct Storage {
@@ -102,9 +105,8 @@ mod IdentityRegistry {
         identities: starknet::storage::Map::<ContractAddress, Identity>,
         hash_to_address: starknet::storage::Map::<felt252, ContractAddress>,
         identity_providers: starknet::storage::Map::<felt252, IdentityProvider>,
-        
-        // Owner storage - using a map with a single key for contract owner
-        owner: starknet::storage::Map::<felt252, ContractAddress>,
+        #[substorage(v0)]
+        ownable: OwnableComponent::Storage
     }
 
     #[event]
@@ -116,7 +118,8 @@ mod IdentityRegistry {
         ExpirationUpdated: ExpirationUpdated,
         IdentityProviderAdded: IdentityProviderAdded,
         IdentityProviderDeactivated: IdentityProviderDeactivated,
-        OwnershipTransferred: OwnershipTransferred,
+        #[flat]
+        OwnableEvent: OwnableComponent::Event
     }
 
     #[derive(Drop, starknet::Event)]
@@ -154,22 +157,11 @@ mod IdentityRegistry {
     struct IdentityProviderDeactivated {
         id: felt252,
     }
-    
-    #[derive(Drop, starknet::Event)]
-    struct OwnershipTransferred {
-        previous_owner: ContractAddress,
-        new_owner: ContractAddress,
-    }
-
-    // Owner key in the map
-    const OWNER_KEY: felt252 = 'OWNER';
 
     #[constructor]
     fn constructor(ref self: ContractState, owner_address: ContractAddress) {
-        // Initialize owner
-        self.owner.write(OWNER_KEY, owner_address);
-        let zero_addr: ContractAddress = Zero::zero();
-        self.emit(OwnershipTransferred { previous_owner: zero_addr, new_owner: owner_address });
+        // Initialize ownable component with the owner
+        self.ownable.initializer(owner_address);
     }
 
     #[abi(embed_v0)]
@@ -333,7 +325,7 @@ mod IdentityRegistry {
         /// Emergency function to revoke verification (owner only)
         fn admin_revoke_verification(ref self: ContractState, address: ContractAddress) -> bool {
             // Only owner can call this function
-            self.assert_only_owner();
+            self.ownable.assert_only_owner();
             
             let identity = self.identities.read(address);
             
@@ -357,7 +349,7 @@ mod IdentityRegistry {
         /// For testing purposes only: force an identity to be marked as expired
         fn force_expire_identity(ref self: ContractState, address: ContractAddress) -> bool {
             // Only owner can call this function
-            self.assert_only_owner();
+            self.ownable.assert_only_owner();
             
             let identity = self.identities.read(address);
             
@@ -383,7 +375,7 @@ mod IdentityRegistry {
             public_key: felt252
         ) -> bool {
             // Only owner can call this function
-            self.assert_only_owner();
+            self.ownable.assert_only_owner();
             
             // Add or update provider
             let provider = IdentityProvider {
@@ -405,7 +397,7 @@ mod IdentityRegistry {
         /// Deactivate a trusted identity provider (owner only)
         fn deactivate_identity_provider(ref self: ContractState, id: felt252) -> bool {
             // Only owner can call this function
-            self.assert_only_owner();
+            self.ownable.assert_only_owner();
             
             let provider = self.identity_providers.read(id);
             
@@ -442,30 +434,6 @@ mod IdentityRegistry {
             provider.is_active
         }
         
-        // Owner management functions
-
-        /// Get the current contract owner
-        fn owner(self: @ContractState) -> ContractAddress {
-            self.owner.read(OWNER_KEY)
-        }
-
-        /// Transfer ownership to a new address
-        fn transfer_ownership(ref self: ContractState, new_owner: ContractAddress) {
-            self.assert_only_owner();
-            assert(!new_owner.is_zero(), 'Zero address not allowed');
-            let previous_owner = self.owner.read(OWNER_KEY);
-            self.owner.write(OWNER_KEY, new_owner);
-            self.emit(OwnershipTransferred { previous_owner, new_owner });
-        }
-
-        /// Renounce ownership by setting owner to zero address
-        fn renounce_ownership(ref self: ContractState) {
-            self.assert_only_owner();
-            let previous_owner = self.owner.read(OWNER_KEY);
-            let zero_addr: ContractAddress = Zero::zero();
-            self.owner.write(OWNER_KEY, zero_addr);
-            self.emit(OwnershipTransferred { previous_owner, new_owner: zero_addr });
-        }
     }
 
     #[generate_trait]
@@ -499,13 +467,6 @@ mod IdentityRegistry {
             // For demonstration, we simulate a successful verification if all parameters are non-zero
             // In production, this MUST be replaced with proper cryptographic verification
             return true;
-        }
-        
-        /// Check if the caller is the contract owner
-        fn assert_only_owner(ref self: ContractState) {
-            let caller = get_caller_address();
-            let owner = self.owner.read(OWNER_KEY);
-            assert(caller == owner, 'Caller is not the owner');
         }
     }
 }
