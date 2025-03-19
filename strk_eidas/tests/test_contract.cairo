@@ -18,11 +18,11 @@ mod tests {
 
     /// Helper function to deploy a new contract instance for testing
     fn deploy_contract() -> (ContractAddress, IIdentityRegistryDispatcher) {
-        let admin_address = contract_address_const(0x123);
+        let owner_address = contract_address_const(0x123);
 
         // Declare and deploy the contract
         let contract = declare("IdentityRegistry").unwrap().contract_class();
-        let constructor_calldata = array![admin_address.into()];
+        let constructor_calldata = array![owner_address.into()];
         let (contract_address, _) = contract.deploy(@constructor_calldata).unwrap();
 
         // Create a dispatcher to interact with the contract
@@ -36,17 +36,17 @@ mod tests {
         // Deploy a new contract instance
         let (_contract_address, dispatcher) = deploy_contract();
         
-        // Test admin address is set correctly
-        let admin_address = contract_address_const(0x123);
-        let stored_admin = dispatcher.get_admin();
-        assert(stored_admin == admin_address, 'Wrong admin');
+        // Test owner address is set correctly
+        let owner_address = contract_address_const(0x123);
+        let stored_owner = dispatcher.owner();
+        assert(stored_owner == owner_address, 'Wrong owner');
     }
 
     /// Helper function to set up an identity provider in the contract
     fn setup_identity_provider(dispatcher: IIdentityRegistryDispatcher) -> felt252 {
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Add a trusted identity provider
         let provider_id: felt252 = 0x456;
@@ -66,9 +66,9 @@ mod tests {
         // Deploy a new contract instance
         let (_contract_address, dispatcher) = deploy_contract();
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Add a trusted identity provider
         let provider_id: felt252 = 0x456;
@@ -100,9 +100,9 @@ mod tests {
         // Add a provider
         let provider_id = setup_identity_provider(dispatcher);
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Deactivate the provider
         let result = dispatcher.deactivate_identity_provider(provider_id);
@@ -138,9 +138,9 @@ mod tests {
         let signature_s: felt252 = 0xbbb; // Mock signature value
         let message_hash: felt252 = 0xccc; // Mock message hash
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Register identity with provider verification
         let result = dispatcher.register_identity(
@@ -155,11 +155,11 @@ mod tests {
         assert(result, 'Reg failed');
         
         // Verify identity is registered correctly
-        let is_verified = dispatcher.verify_identity(admin_address);
+        let is_verified = dispatcher.verify_identity(owner_address);
         assert(is_verified, 'Not verified');
         
         // Get identity info and verify the data
-        let identity_info = dispatcher.get_identity_info(admin_address);
+        let identity_info = dispatcher.get_identity_info(owner_address);
         assert(identity_info.hash == identity_hash, 'Hash mismatch');
         assert(identity_info.metadata_uri == metadata_uri, 'URI wrong');
         assert(identity_info.verified == true, 'Not verified');
@@ -177,9 +177,9 @@ mod tests {
         // Add a provider
         let provider_id = setup_identity_provider(dispatcher);
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Signature values (simplified for testing)
         let signature_r: felt252 = 0xaaa; 
@@ -224,7 +224,7 @@ mod tests {
         assert(result, 'Update failed');
         
         // Get updated identity info and verify
-        let updated_info = dispatcher.get_identity_info(admin_address);
+        let updated_info = dispatcher.get_identity_info(owner_address);
         assert(updated_info.hash == new_hash, 'Hash wrong');
         assert(updated_info.metadata_uri == new_metadata, 'Meta wrong');
         assert(updated_info.expiration == new_expiration, 'Exp wrong');
@@ -242,9 +242,9 @@ mod tests {
         // Add a provider
         let provider_id = setup_identity_provider(dispatcher);
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Signature values (simplified for testing)
         let signature_r: felt252 = 0xaaa;
@@ -268,7 +268,7 @@ mod tests {
         );
         
         // Verify it's registered
-        let is_verified_before = dispatcher.verify_identity(admin_address);
+        let is_verified_before = dispatcher.verify_identity(owner_address);
         assert(is_verified_before, 'Not verified');
         
         // Revoke verification
@@ -276,11 +276,11 @@ mod tests {
         assert(result, 'Rev failed');
         
         // Verify it's no longer verified
-        let is_verified_after = dispatcher.verify_identity(admin_address);
+        let is_verified_after = dispatcher.verify_identity(owner_address);
         assert(!is_verified_after, 'Still verified');
         
         // Check the identity record directly
-        let identity_info = dispatcher.get_identity_info(admin_address);
+        let identity_info = dispatcher.get_identity_info(owner_address);
         assert(identity_info.verified == false, 'Still verified');
         
         stop_cheat_caller_address_global();
@@ -294,9 +294,9 @@ mod tests {
         // Add a provider
         let provider_id = setup_identity_provider(dispatcher);
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Signature values (simplified for testing)
         let signature_r: felt252 = 0xaaa;
@@ -323,7 +323,7 @@ mod tests {
         start_cheat_block_timestamp_global(2000); // Set time to be after the expiration
         
         // Verify it's expired due to past expiration date
-        let is_verified = dispatcher.verify_identity(admin_address);
+        let is_verified = dispatcher.verify_identity(owner_address);
         assert(!is_verified, 'Not expired');
         
         stop_cheat_block_timestamp_global();
@@ -338,9 +338,9 @@ mod tests {
         // Add a provider
         let provider_id = setup_identity_provider(dispatcher);
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Signature values (simplified for testing)
         let signature_r: felt252 = 0xaaa;
@@ -364,14 +364,14 @@ mod tests {
         );
         
         // Verify it's registered and active
-        let is_verified_before = dispatcher.verify_identity(admin_address);
+        let is_verified_before = dispatcher.verify_identity(owner_address);
         assert(is_verified_before, 'Not verified');
         
         // Deactivate the provider
         dispatcher.deactivate_identity_provider(provider_id);
         
         // Verification should now fail because the provider is inactive
-        let is_verified_after = dispatcher.verify_identity(admin_address);
+        let is_verified_after = dispatcher.verify_identity(owner_address);
         assert(!is_verified_after, 'Still verified');
         
         stop_cheat_caller_address_global();
@@ -386,9 +386,9 @@ mod tests {
         // Add a provider
         let provider_id = setup_identity_provider(dispatcher);
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Signature values (simplified for testing)
         let signature_r: felt252 = 0xaaa;
@@ -434,9 +434,9 @@ mod tests {
         // Add a provider
         let provider_id = setup_identity_provider(dispatcher);
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Signature values (simplified for testing)
         let signature_r: felt252 = 0xaaa;
@@ -468,9 +468,9 @@ mod tests {
         // Deploy a new contract instance
         let (_contract_address, dispatcher) = deploy_contract();
         
-        // Set the caller address to be the admin
-        let admin_address = contract_address_const(0x123);
-        start_cheat_caller_address_global(admin_address);
+        // Set the caller address to be the owner
+        let owner_address = contract_address_const(0x123);
+        start_cheat_caller_address_global(owner_address);
         
         // Signature values (simplified for testing)
         let signature_r: felt252 = 0xaaa;
@@ -498,21 +498,21 @@ mod tests {
     }
     
     #[test]
-    #[should_panic(expected: ('Not authorized',))]
-    fn test_add_provider_as_non_admin() {
+    #[should_panic(expected: ('Caller is not the owner',))]
+    fn test_add_provider_as_non_owner() {
         // Deploy a new contract instance
         let (_contract_address, dispatcher) = deploy_contract();
         
-        // Set the caller address to be a non-admin
-        let non_admin_address = contract_address_const(0x456);
-        start_cheat_caller_address_global(non_admin_address);
+        // Set the caller address to be a non-owner
+        let non_owner_address = contract_address_const(0x456);
+        start_cheat_caller_address_global(non_owner_address);
         
-        // Try to add a provider as non-admin
+        // Try to add a provider as non-owner
         let provider_id: felt252 = 0x456;
         let provider_name: felt252 = 0x4652414e43455f434f4e4e454354;
         let provider_public_key: felt252 = 0x789;
         
-        // Should panic with 'Not authorized'
+        // Should panic with 'Caller is not the owner'
         dispatcher.add_identity_provider(provider_id, provider_name, provider_public_key);
         
         stop_cheat_caller_address_global();
