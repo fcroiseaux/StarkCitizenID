@@ -59,10 +59,7 @@ export function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <LanguageSwitcher />
-          
+        <div className="flex items-center gap-4">
           {wallet ? (
             <div className="hidden md:flex items-center space-x-2 text-sm">
               <span className="text-muted-foreground">
@@ -116,6 +113,11 @@ export function Header() {
               <Link href="/login">{t('common.signIn')}</Link>
             </Button>
           )}
+          
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
     </header>

@@ -7,7 +7,13 @@ import { availableLanguages } from "@/lib/i18n/translations";
 export function LanguageSwitcher() {
   const { language, changeLanguage } = useLanguage();
 
-  // Map des noms de langues pour l'affichage
+  // Map des drapeaux par langue
+  const languageFlags: Record<string, string> = {
+    fr: "🇫🇷",
+    en: "🇬🇧",
+  };
+
+  // Map des noms de langues pour le titre et l'attribut aria-label
   const languageNames: Record<string, string> = {
     fr: "Français",
     en: "English",
@@ -21,15 +27,14 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
+    <button
       onClick={handleChangeLanguage}
-      className="text-xs flex items-center gap-1"
+      className="appearance-none bg-transparent border-none p-0 m-0 shadow-none outline-none w-10 h-10 flex items-center justify-center cursor-pointer transition-transform duration-300 hover:rotate-[15deg]"
+      title={languageNames[language]}
+      aria-label={`Changer la langue : ${languageNames[language]}`}
+      style={{ backgroundColor: 'transparent' }}
     >
-      <span className="font-semibold uppercase">{language}</span>
-      <span className="mx-1">|</span> 
-      <span>{languageNames[language]}</span>
-    </Button>
+      <span className="text-2xl">{languageFlags[language]}</span>
+    </button>
   );
 }

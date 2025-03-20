@@ -25,11 +25,12 @@ export function ThemeToggle() {
   return (
     <button 
       onClick={toggleTheme} 
-      className="theme-toggle bg-transparent border border-border rounded-full w-10 h-10 flex items-center justify-center cursor-pointer transition-transform duration-300 hover:rotate-[15deg] hover:bg-card"
+      className="appearance-none bg-transparent border-none p-0 m-0 shadow-none outline-none w-10 h-10 flex items-center justify-center cursor-pointer transition-transform duration-300 hover:rotate-[15deg]"
       aria-label={t('theme.toggle')}
       title={t('theme.toggle')}
+      style={{ backgroundColor: 'transparent' }}
     >
-      {theme === 'light' ? '🌙' : '☀️'}
+      <span className="text-2xl">{theme === 'light' ? '🌙' : '☀️'}</span>
     </button>
   )
 }

@@ -201,6 +201,15 @@ p {
   display: flex;
 }
 
+/* Reset button styles */
+button.appearance-none {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+}
+
 .flex-col {
   flex-direction: column;
 }
