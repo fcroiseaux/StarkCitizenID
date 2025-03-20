@@ -95,6 +95,40 @@ export default function HomePage() {
         </p>
       </div>
 
+      {/* How it works section */}
+      <div className="w-full max-w-6xl">
+        <h2 className="text-2xl font-bold text-center mb-8">{t('home.howItWorks')}</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{ gridAutoRows: "auto" }}>
+          {/* Step 1 - France Connect */}
+          <div className="card p-4 space-y-2 border border-blue-200 dark:border-blue-800 rounded-lg shadow-sm bg-white dark:bg-gray-800">
+            <div className="rounded-full bg-transparent border-2 border-blue-500 w-10 h-10 flex items-center justify-center font-bold text-blue-600 dark:text-blue-400">1</div>
+            <h3 className="font-bold">{t('home.step1Title')}</h3>
+            <p className="text-sm text-muted-foreground">
+              {t('home.step1Description')}
+            </p>
+          </div>
+          
+          {/* Step 3 - Identity Linking (middle) */}
+          <div className="card p-4 space-y-2 border border-indigo-200 dark:border-indigo-800 rounded-lg shadow-sm bg-white dark:bg-gray-800">
+            <div className="rounded-full bg-transparent border-2 border-indigo-500 w-10 h-10 flex items-center justify-center font-bold text-indigo-600 dark:text-indigo-400">3</div>
+            <h3 className="font-bold">{t('home.step3Title')}</h3>
+            <p className="text-sm text-muted-foreground">
+              {t('home.step3Description')}
+            </p>
+          </div>
+          
+          {/* Step 2 - Starknet Wallet (right) */}
+          <div className="card p-4 space-y-2 border border-purple-200 dark:border-purple-800 rounded-lg shadow-sm bg-white dark:bg-gray-800">
+            <div className="rounded-full bg-transparent border-2 border-purple-500 w-10 h-10 flex items-center justify-center font-bold text-purple-600 dark:text-purple-400">2</div>
+            <h3 className="font-bold">{t('home.step2Title')}</h3>
+            <p className="text-sm text-muted-foreground">
+              {t('home.step2Description')}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Identity Connection Boxes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl" style={{ gridAutoRows: "1fr" }}>
         {/* France Connect Identity Box */}
@@ -220,7 +254,7 @@ export default function HomePage() {
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="text-center max-w-xs mx-auto space-y-6">
                   <div className="relative h-24 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-indigo-300 dark:text-indigo-400 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-300 dark:text-indigo-400 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ width: '33%', height: 'auto' }}>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                     </svg>
                   </div>
@@ -360,37 +394,6 @@ export default function HomePage() {
             )}
           </CardContent>
         </Card>
-      </div>
-
-      {/* How it works section */}
-      <div className="w-full max-w-5xl space-y-8 mt-4">
-        <h2 className="text-2xl font-bold text-center">{t('home.howItWorks')}</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card p-4 space-y-2">
-            <div className="rounded-full bg-transparent border-2 border-blue-500 w-10 h-10 flex items-center justify-center font-bold text-blue-600 dark:text-blue-400">1</div>
-            <h3 className="font-bold">{t('home.step1Title')}</h3>
-            <p className="text-sm text-muted-foreground">
-              {t('home.step1Description')}
-            </p>
-          </div>
-          
-          <div className="card p-4 space-y-2">
-            <div className="rounded-full bg-transparent border-2 border-indigo-500 w-10 h-10 flex items-center justify-center font-bold text-indigo-600 dark:text-indigo-400">2</div>
-            <h3 className="font-bold">{t('home.step2Title')}</h3>
-            <p className="text-sm text-muted-foreground">
-              {t('home.step2Description')}
-            </p>
-          </div>
-          
-          <div className="card p-4 space-y-2">
-            <div className="rounded-full bg-transparent border-2 border-purple-500 w-10 h-10 flex items-center justify-center font-bold text-purple-600 dark:text-purple-400">3</div>
-            <h3 className="font-bold">{t('home.step3Title')}</h3>
-            <p className="text-sm text-muted-foreground">
-              {t('home.step3Description')}
-            </p>
-          </div>
-        </div>
       </div>
       
       {/* DeFi Section */}
