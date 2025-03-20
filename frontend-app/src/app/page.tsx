@@ -265,11 +265,17 @@ export default function HomePage() {
                   <div className="font-mono text-sm overflow-hidden bg-white/80 dark:bg-black/20 p-2 rounded border border-purple-100 dark:border-purple-800/30">
                     <div className="flex items-center justify-between">
                       <span className="truncate">{formatAddress(wallet.address)}</span>
-                      <div className="text-xs text-purple-500 dark:text-purple-400 ml-2 cursor-pointer hover:underline whitespace-nowrap" 
-                           onClick={() => {
-                             navigator.clipboard.writeText(wallet.address);
-                             toast.success(t('home.walletBoxCopied'));
-                           }}>
+                      <div 
+                        className="text-xs text-purple-500 dark:text-purple-400 ml-2 cursor-pointer hover:underline whitespace-nowrap flex items-center gap-1"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(wallet.address);
+                          toast.success(t('home.walletBoxCopied'));
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
                         {t('home.walletBoxCopy')}
                       </div>
                     </div>
@@ -310,10 +316,16 @@ export default function HomePage() {
                   </div>
                   <button 
                     onClick={fetchBalances} 
-                    className="mt-2 text-xs text-purple-600 dark:text-purple-400 hover:underline flex items-center"
+                    className="mt-2 text-xs text-purple-600 dark:text-purple-400 hover:underline hover:bg-purple-50 dark:hover:bg-purple-900/20 flex items-center rounded px-2 py-1 transition-colors"
+                    style={{ cursor: balancesLoading ? 'wait' : 'pointer' }}
                     disabled={balancesLoading}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                      className={`h-3 w-3 mr-1 ${balancesLoading ? 'animate-spin' : ''}`} 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                     {balancesLoading ? t('home.walletBoxRefreshing') : t('home.walletBoxRefresh')}
