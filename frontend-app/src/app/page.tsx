@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 export default function HomePage() {
   const { t } = useLanguage();
   const { isAuthenticated, user, login, loading: authLoading } = useAuth();
-  const { wallet, connectWallet, loading: walletLoading } = useWallet();
+  const { wallet, connectWallet, loading: walletLoading, balances, balancesLoading, fetchBalances } = useWallet();
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [identityLoading, setIdentityLoading] = useState(false);
   const [linkLoading, setLinkLoading] = useState(false);
@@ -96,50 +96,55 @@ export default function HomePage() {
       </div>
 
       {/* Identity Connection Boxes */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl" style={{ gridAutoRows: "1fr" }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl" style={{ gridAutoRows: "1fr" }}>
         {/* France Connect Identity Box */}
-        <Card className="border-2 border-blue-400 dark:border-blue-600 shadow-md h-full flex flex-col">
-          <CardHeader className="pb-2 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-t-lg">
-            <CardTitle className="flex justify-between items-center">
-              <span>🇫🇷 France Connect</span>
+        <Card className="border border-blue-200 dark:border-blue-800 shadow-lg h-full flex flex-col overflow-hidden">
+          <CardHeader className="pb-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30">
+            <div className="flex justify-between items-center mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🇫🇷</span>
+                <CardTitle className="text-lg font-medium">France Connect</CardTitle>
+              </div>
               {isAuthenticated && (
-                <div className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded-full">
+                <div className="bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
                   Connecté
                 </div>
               )}
-            </CardTitle>
-            <CardDescription>Identité numérique officielle</CardDescription>
+            </div>
+            <CardDescription className="text-sm opacity-80">Identité numérique officielle française</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6 pb-6 flex-1 flex flex-col" style={{ minHeight: "300px" }}>
+          <CardContent className="p-6 flex-1 flex flex-col justify-center" style={{ minHeight: "280px" }}>
             {isAuthenticated ? (
-              <div className="space-y-4 flex-1">
+              <div className="space-y-5 flex-1 flex flex-col justify-center">
                 {user?.given_name && user?.family_name && (
-                  <div>
-                    <strong className="block text-sm text-muted-foreground">Nom</strong>
+                  <div className="bg-blue-50/60 dark:bg-blue-900/20 rounded-lg p-4">
+                    <strong className="block text-xs uppercase tracking-wider text-blue-800 dark:text-blue-300 mb-1 font-medium">Nom</strong>
                     <p className="text-xl font-medium">{user.given_name} {user.family_name}</p>
                   </div>
                 )}
-                {user?.birth_date && (
-                  <div>
-                    <strong className="block text-sm text-muted-foreground">Date de naissance</strong>
-                    <p>{user.birth_date}</p>
-                  </div>
-                )}
-                {user?.email && (
-                  <div>
-                    <strong className="block text-sm text-muted-foreground">Email</strong>
-                    <p>{user.email}</p>
-                  </div>
-                )}
+                <div className="grid grid-cols-2 gap-4">
+                  {user?.birth_date && (
+                    <div>
+                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Date de naissance</strong>
+                      <p className="font-medium">{user.birth_date}</p>
+                    </div>
+                  )}
+                  {user?.email && (
+                    <div>
+                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Email</strong>
+                      <p className="font-medium">{user.email}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center py-8 space-y-6">
-                <div className="text-center">
-                  <p className="mb-6 text-muted-foreground">Connectez-vous avec FranceConnect pour vérifier votre identité</p>
+              <div className="flex-1 flex flex-col items-center justify-center py-6">
+                <div className="text-center max-w-xs mx-auto">
+                  <p className="mb-6 text-muted-foreground text-sm">Connectez-vous avec France Connect pour utiliser votre identité numérique</p>
                   <FranceConnectButton 
                     onClick={login} 
                     loading={authLoading}
-                    size="lg"
+                    size="default"
                   />
                 </div>
               </div>
@@ -148,54 +153,57 @@ export default function HomePage() {
         </Card>
 
         {/* Middle Connection Box */}
-        <Card className="border-2 border-indigo-400 dark:border-indigo-600 shadow-md h-full flex flex-col">
-          <CardHeader className="pb-2 bg-gradient-to-r from-indigo-50 to-purple-100 dark:from-indigo-900/20 dark:to-purple-800/20 rounded-t-lg">
-            <CardTitle className="flex justify-between items-center">
-              <span>🔗 Connexion</span>
+        <Card className="border border-indigo-200 dark:border-indigo-800 shadow-lg h-full flex flex-col overflow-hidden">
+          <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30">
+            <div className="flex justify-between items-center mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🔗</span>
+                <CardTitle className="text-lg font-medium">StarkCitizenID</CardTitle>
+              </div>
               {isLinked && !isExpired && (
-                <div className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded-full">
+                <div className="bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
                   Identités liées
                 </div>
               )}
               {isLinked && isExpired && (
-                <div className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 text-xs px-2 py-1 rounded-full">
+                <div className="bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-300 text-xs px-2 py-0.5 rounded-full font-medium">
                   Lien expiré
                 </div>
               )}
-            </CardTitle>
-            <CardDescription>Liez vos identités sur Starknet</CardDescription>
+            </div>
+            <CardDescription className="text-sm opacity-80">Connectez vos identités sur Starknet</CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col pt-6 pb-6" style={{ minHeight: "300px" }}>
+          <CardContent className="p-6 flex-1 flex flex-col justify-center" style={{ minHeight: "280px" }}>
             {identityLoading ? (
               <div className="flex-1 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
               </div>
             ) : isLinked ? (
-              <div className="space-y-4">
-                <div className="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-lg">
-                  <h3 className="font-medium text-indigo-700 dark:text-indigo-300 mb-2">Informations de liaison</h3>
-                  <div className="space-y-2">
+              <div className="flex-1 flex flex-col justify-center">
+                <div className="bg-indigo-50/60 dark:bg-indigo-900/20 p-5 rounded-lg space-y-4">
+                  <h3 className="text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-2 uppercase tracking-wider">Informations de liaison</h3>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                     <div>
-                      <strong className="block text-sm text-muted-foreground">Statut</strong>
-                      <p className="text-green-600 dark:text-green-400 font-medium">
+                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Statut</strong>
+                      <p className={`font-medium ${isExpired ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                         {isExpired ? 'Expiré' : 'Vérifié'}
                       </p>
                     </div>
                     <div>
-                      <strong className="block text-sm text-muted-foreground">Vérifié le</strong>
-                      <p>{formatDate(identity?.timestamp || 0)}</p>
+                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Vérifié le</strong>
+                      <p className="font-medium">{formatDate(identity?.timestamp || 0)}</p>
                     </div>
                     {identity?.expiration !== 0 && (
-                      <div>
-                        <strong className="block text-sm text-muted-foreground">Expire le</strong>
-                        <p className={isExpired ? 'text-red-600 dark:text-red-400' : ''}>
+                      <div className="col-span-2">
+                        <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Expire le</strong>
+                        <p className={`font-medium ${isExpired ? 'text-red-600 dark:text-red-400' : ''}`}>
                           {formatDate(identity?.expiration || 0)}
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="flex justify-center mt-4">
+                <div className="mt-6">
                   {isExpired ? (
                     <Button asChild className="w-full">
                       <Link href="/verify">Renouveler le lien</Link>
@@ -208,17 +216,20 @@ export default function HomePage() {
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center">
-                <div className="space-y-6 py-6">
-                  <div className="flex flex-col items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-indigo-400 dark:text-indigo-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="text-center max-w-xs mx-auto space-y-6">
+                  <div className="relative h-24 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-indigo-300 dark:text-indigo-400 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                     </svg>
-                    <p className="text-muted-foreground mb-4">Connectez-vous avec FranceConnect et votre wallet Starknet pour lier vos identités</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-sm mb-5">Connectez-vous avec France Connect et votre wallet Starknet pour lier vos identités</p>
                     <Button 
                       onClick={linkIdentities} 
                       disabled={!canLink || linkLoading}
                       className="w-full"
+                      variant="default"
                     >
                       {linkLoading ? 'Chargement...' : 'Lier mes identités'}
                     </Button>
@@ -230,50 +241,101 @@ export default function HomePage() {
         </Card>
 
         {/* Starknet Wallet Box */}
-        <Card className="border-2 border-purple-400 dark:border-purple-600 shadow-md h-full flex flex-col">
-          <CardHeader className="pb-2 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-t-lg">
-            <CardTitle className="flex justify-between items-center">
-              <span>🦄 Starknet Wallet</span>
+        <Card className="border border-purple-200 dark:border-purple-800 shadow-lg h-full flex flex-col overflow-hidden">
+          <CardHeader className="pb-4 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30">
+            <div className="flex justify-between items-center mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🦄</span>
+                <CardTitle className="text-lg font-medium">Starknet Wallet</CardTitle>
+              </div>
               {wallet && (
-                <div className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded-full">
+                <div className="bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
                   Connecté
                 </div>
               )}
-            </CardTitle>
-            <CardDescription>Votre compte sur Starknet</CardDescription>
+            </div>
+            <CardDescription className="text-sm opacity-80">Votre compte blockchain sur Starknet</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6 pb-6 flex-1 flex flex-col" style={{ minHeight: "300px" }}>
+          <CardContent className="p-6 flex-1 flex flex-col justify-center" style={{ minHeight: "280px" }}>
             {wallet ? (
-              <div className="space-y-4 flex-1">
-                <div>
-                  <strong className="block text-sm text-muted-foreground">Adresse</strong>
-                  <p className="font-mono text-sm break-all">{wallet.address}</p>
+              <div className="flex-1 flex flex-col justify-center">
+                <div className="bg-purple-50/60 dark:bg-purple-900/20 p-5 rounded-lg mb-4">
+                  <strong className="block text-xs uppercase tracking-wider text-purple-800 dark:text-purple-300 mb-2 font-medium">Adresse du wallet</strong>
+                  <div className="font-mono text-sm break-all bg-white/80 dark:bg-black/20 p-2 rounded border border-purple-100 dark:border-purple-800/30">
+                    {wallet.address}
+                  </div>
                 </div>
-                <div>
-                  <strong className="block text-sm text-muted-foreground">Réseau</strong>
-                  <p>{process.env.NEXT_PUBLIC_STARKNET_NETWORK || 'testnet'}</p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Réseau</strong>
+                    <p className="font-medium capitalize">{process.env.NEXT_PUBLIC_STARKNET_NETWORK || 'testnet'}</p>
+                  </div>
+                  <div>
+                    <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Type</strong>
+                    <p className="font-medium">Starknet</p>
+                  </div>
+                </div>
+                
+                <div className="mt-5">
+                  <strong className="block text-xs uppercase tracking-wider text-purple-800 dark:text-purple-300 mb-2 font-medium">Soldes</strong>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white/80 dark:bg-black/20 p-3 rounded border border-purple-100 dark:border-purple-800/30">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-purple-800 dark:text-purple-300 font-medium">ETH</span>
+                        {balancesLoading ? (
+                          <div className="h-4 w-4 border-t-2 border-purple-500 rounded-full animate-spin ml-1"></div>
+                        ) : (
+                          <span className="font-mono text-base font-medium">{balances.eth}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="bg-white/80 dark:bg-black/20 p-3 rounded border border-purple-100 dark:border-purple-800/30">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-purple-800 dark:text-purple-300 font-medium">STRK</span>
+                        {balancesLoading ? (
+                          <div className="h-4 w-4 border-t-2 border-purple-500 rounded-full animate-spin ml-1"></div>
+                        ) : (
+                          <span className="font-mono text-base font-medium">{balances.strk}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={fetchBalances} 
+                    className="mt-2 text-xs text-purple-600 dark:text-purple-400 hover:underline flex items-center"
+                    disabled={balancesLoading}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    {balancesLoading ? 'Actualisation...' : 'Actualiser'}
+                  </button>
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center py-8">
-                <div className="text-center space-y-6">
-                  <div className="py-2 flex justify-center">
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="text-center max-w-xs mx-auto space-y-6">
+                  <div className="relative h-24 flex items-center justify-center">
                     <Image 
                       src="/file.svg" 
                       alt="Starknet Wallet" 
-                      width={80} 
-                      height={80}
-                      className="opacity-50"
+                      width={64} 
+                      height={64}
+                      className="opacity-40"
                     />
                   </div>
-                  <p className="text-muted-foreground">Connectez votre portefeuille Starknet pour interagir avec vos contrats d'identité</p>
-                  <Button 
-                    onClick={connectWallet} 
-                    disabled={walletLoading}
-                    className="w-full"
-                  >
-                    {walletLoading ? 'Connexion...' : 'Connecter mon wallet'}
-                  </Button>
+                  <div>
+                    <p className="text-muted-foreground text-sm mb-5">Connectez votre portefeuille Starknet pour interagir avec vos contrats d'identité</p>
+                    <Button 
+                      onClick={connectWallet} 
+                      disabled={walletLoading}
+                      className="w-full"
+                      variant="default"
+                    >
+                      {walletLoading ? 'Connexion...' : 'Connecter mon wallet'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
