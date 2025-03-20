@@ -1,6 +1,10 @@
+'use client';
+
 import Link from 'next/link';
+import { useLanguage } from '@/lib/i18n/language-context';
 
 export default function HomePage() {
+  const { t } = useLanguage();
   return (
     <div className="flex flex-col items-center space-y-12 py-12">
       <div className="text-center space-y-4">
@@ -8,53 +12,53 @@ export default function HomePage() {
           StarkCitizenID
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl">
-          Liez de façon sécurisée votre identité officielle compatible eIDAS (comme FranceConnect) à votre compte Starknet
+          {t('home.title')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
         <div className="card space-y-4">
-          <h2 className="text-2xl font-bold">Vérification d'identité</h2>
+          <h2 className="text-2xl font-bold">{t('home.verificationTitle')}</h2>
           <p className="text-gray-600">
-            Vérifiez votre identité avec FranceConnect et liez-la à votre compte Starknet pour une vérification sécurisée sur la blockchain.
+            {t('home.verificationDescription')}
           </p>
-          <Link href="/verify" className="btn">Vérifier l'identité</Link>
+          <Link href="/verify" className="btn">{t('common.verifyIdentity')}</Link>
         </div>
 
         <div className="card space-y-4">
-          <h2 className="text-2xl font-bold">Tableau de bord d'identité</h2>
+          <h2 className="text-2xl font-bold">{t('home.dashboardTitle')}</h2>
           <p className="text-gray-600">
-            Consultez l'état de vérification de votre identité, gérez la vérification et connectez votre portefeuille Starknet.
+            {t('home.dashboardDescription')}
           </p>
-          <Link href="/dashboard" className="btn btn-outline">Accéder au tableau de bord</Link>
+          <Link href="/dashboard" className="btn btn-outline">{t('common.goToDashboard')}</Link>
         </div>
       </div>
 
       <div className="w-full max-w-5xl space-y-8 mt-8">
-        <h2 className="text-2xl font-bold text-center">Comment ça marche</h2>
+        <h2 className="text-2xl font-bold text-center">{t('home.howItWorks')}</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="card p-4 space-y-2">
             <div className="rounded-full bg-white border w-10 h-10 flex items-center justify-center font-bold" style={{backgroundColor: "rgba(0, 112, 243, 0.1)"}}>1</div>
-            <h3 className="font-bold">Authentifiez-vous avec FranceConnect</h3>
+            <h3 className="font-bold">{t('home.step1Title')}</h3>
             <p className="text-sm text-gray-600">
-              Utilisez votre identité officielle FranceConnect pour vous authentifier en toute sécurité via notre service.
+              {t('home.step1Description')}
             </p>
           </div>
           
           <div className="card p-4 space-y-2">
             <div className="rounded-full bg-white border w-10 h-10 flex items-center justify-center font-bold" style={{backgroundColor: "rgba(0, 112, 243, 0.1)"}}>2</div>
-            <h3 className="font-bold">Connectez votre portefeuille Starknet</h3>
+            <h3 className="font-bold">{t('home.step2Title')}</h3>
             <p className="text-sm text-gray-600">
-              Liez votre portefeuille Starknet pour créer une connexion entre votre identité et votre compte blockchain.
+              {t('home.step2Description')}
             </p>
           </div>
           
           <div className="card p-4 space-y-2">
             <div className="rounded-full bg-white border w-10 h-10 flex items-center justify-center font-bold" style={{backgroundColor: "rgba(0, 112, 243, 0.1)"}}>3</div>
-            <h3 className="font-bold">Vérifiez sur la blockchain</h3>
+            <h3 className="font-bold">{t('home.step3Title')}</h3>
             <p className="text-sm text-gray-600">
-              Votre identité est vérifiée sur Starknet sans révéler vos données personnelles, permettant des applications sécurisées sur la blockchain.
+              {t('home.step3Description')}
             </p>
           </div>
         </div>

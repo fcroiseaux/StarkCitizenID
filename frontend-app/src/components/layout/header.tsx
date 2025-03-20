@@ -14,11 +14,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/lib/france-connect/auth-context';
 import { useWallet } from '@/lib/starknet/wallet-context';
+import { useLanguage } from '@/lib/i18n/language-context';
+import { LanguageSwitcher } from '@/components/language/language-switcher';
 
 export function Header() {
   const pathname = usePathname();
   const { isAuthenticated, user, logout } = useAuth();
   const { wallet, disconnect } = useWallet();
+  const { t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
@@ -34,7 +37,7 @@ export function Header() {
                 pathname === '/' ? 'text-foreground' : 'text-muted-foreground'
               }`}
             >
-              Accueil
+              {t('common.home')}
             </Link>
             <Link
               href="/dashboard"
@@ -42,7 +45,7 @@ export function Header() {
                 pathname === '/dashboard' ? 'text-foreground' : 'text-muted-foreground'
               }`}
             >
-              Tableau de bord
+              {t('common.dashboard')}
             </Link>
             <Link
               href="/verify"
@@ -50,12 +53,14 @@ export function Header() {
                 pathname === '/verify' ? 'text-foreground' : 'text-muted-foreground'
               }`}
             >
-              Vérifier l'identité
+              {t('common.verifyIdentity')}
             </Link>
           </nav>
         </div>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          
           {wallet ? (
             <div className="hidden md:flex items-center space-x-2 text-sm">
               <span className="text-muted-foreground">
@@ -69,7 +74,7 @@ export function Header() {
               className="hidden md:flex"
               asChild
             >
-              <Link href="/wallet">Connecter le portefeuille</Link>
+              <Link href="/wallet">{t('common.connectWallet')}</Link>
             </Button>
           )}
 
@@ -90,23 +95,23 @@ export function Header() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard">Tableau de bord</Link>
+                  <Link href="/dashboard">{t('common.dashboard')}</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">Profil</Link>
+                  <Link href="/profile">{t('common.profile')}</Link>
                 </DropdownMenuItem>
                 {wallet && (
                   <DropdownMenuItem onClick={disconnect}>
-                    Déconnecter le portefeuille
+                    {t('common.disconnectWallet')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>Se déconnecter</DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>{t('common.signOut')}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button variant="default" size="sm" asChild>
-              <Link href="/login">Se connecter avec FranceConnect</Link>
+              <Link href="/login">{t('common.signIn')}</Link>
             </Button>
           )}
         </div>
