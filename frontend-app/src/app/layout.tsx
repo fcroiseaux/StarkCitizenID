@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from '@/lib/france-connect/auth-context';
 import { WalletProvider } from '@/lib/starknet/wallet-context';
 import { LanguageProvider } from '@/lib/i18n/language-context';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 import { Header } from '@/components/layout/header';
 import { Toaster } from '@/components/ui/sonner';
 import Footer from '@/components/footer';
@@ -31,24 +32,26 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <LanguageProvider>
-          <AuthProvider>
-            <WalletProvider>
-              <div className="flex min-h-screen flex-col">
-                <Header />
-                <main className="flex-1 container py-8">
-                  {children}
-                </main>
-                <footer className="py-4 border-t">
-                  <div className="container text-center text-sm text-muted-foreground">
-                    <Footer />
-                  </div>
-                </footer>
-              </div>
-              <Toaster />
-            </WalletProvider>
-          </AuthProvider>
-        </LanguageProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <LanguageProvider>
+            <AuthProvider>
+              <WalletProvider>
+                <div className="flex min-h-screen flex-col">
+                  <Header />
+                  <main className="flex-1 container py-8">
+                    {children}
+                  </main>
+                  <footer className="py-4 border-t">
+                    <div className="container text-center text-sm text-muted-foreground">
+                      <Footer />
+                    </div>
+                  </footer>
+                </div>
+                <Toaster />
+              </WalletProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

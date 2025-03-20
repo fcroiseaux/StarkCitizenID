@@ -24,6 +24,12 @@ export const frTranslations: Translation = {
     goToDashboard: "Accéder au tableau de bord",
     footer: "Vérification d'identité sécurisée sur Starknet",
   },
+  theme: {
+    toggle: "Changer le thème",
+    light: "Clair",
+    dark: "Sombre",
+    system: "Système",
+  },
   home: {
     title: "Liez de façon sécurisée votre identité officielle compatible eIDAS (comme FranceConnect) à votre compte Starknet",
     verificationTitle: "Vérification d'identité",
@@ -140,6 +146,12 @@ export const enTranslations: Translation = {
     retry: "Try Again",
     goToDashboard: "Go to Dashboard",
     footer: "Secure Identity Verification on Starknet",
+  },
+  theme: {
+    toggle: "Toggle theme",
+    light: "Light",
+    dark: "Dark",
+    system: "System",
   },
   home: {
     title: "Securely link your official eIDAS-compliant identity (like France Connect) to your Starknet account",

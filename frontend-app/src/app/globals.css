@@ -1,11 +1,56 @@
 /* Basic styling without using Tailwind CSS */
 
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 5.9% 10%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
+}
+
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   margin: 0;
   padding: 0;
-  color: #111;
-  background-color: #fff;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
   line-height: 1.5;
 }
 
@@ -19,8 +64,8 @@ body {
 
 /* Header */
 header {
-  background-color: #fff;
-  border-bottom: 1px solid #eaeaea;
+  background-color: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
   position: sticky;
   top: 0;
   z-index: 10;
@@ -39,7 +84,7 @@ header nav {
 }
 
 a {
-  color: #0070f3;
+  color: hsl(var(--primary));
   text-decoration: none;
 }
 
@@ -55,10 +100,10 @@ main {
 
 /* Footer */
 footer {
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid hsl(var(--border));
   padding: 1rem 0;
   text-align: center;
-  color: #666;
+  color: hsl(var(--muted-foreground));
 }
 
 /* Typography */
@@ -86,8 +131,8 @@ p {
 
 /* Components */
 .card {
-  background-color: #fff;
-  border: 1px solid #eaeaea;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 1rem;
@@ -105,7 +150,7 @@ p {
 }
 
 .card-description {
-  color: #666;
+  color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
 }
 
@@ -124,8 +169,8 @@ p {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  background-color: #0070f3;
-  color: white;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
@@ -137,18 +182,18 @@ p {
 }
 
 .btn:hover {
-  background-color: #0060df;
+  background-color: hsl(var(--primary) / 0.9);
   text-decoration: none;
 }
 
 .btn-outline {
   background-color: transparent;
-  color: #0070f3;
-  border: 1px solid #0070f3;
+  color: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary));
 }
 
 .btn-outline:hover {
-  background-color: rgba(0, 112, 243, 0.1);
+  background-color: hsl(var(--primary) / 0.1);
 }
 
 /* Utilities */
@@ -249,27 +294,27 @@ p {
 }
 
 .text-gray-500 {
-  color: #6b7280;
+  color: hsl(var(--muted-foreground));
 }
 
 .text-gray-600 {
-  color: #4b5563;
+  color: hsl(var(--muted-foreground));
 }
 
 .bg-white {
-  background-color: #fff;
+  background-color: hsl(var(--background));
 }
 
 .border {
-  border: 1px solid #e5e7eb;
+  border: 1px solid hsl(var(--border));
 }
 
 .border-t {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid hsl(var(--border));
 }
 
 .border-b {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .shadow-sm {

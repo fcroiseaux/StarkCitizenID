@@ -16,6 +16,7 @@ import { useAuth } from '@/lib/france-connect/auth-context';
 import { useWallet } from '@/lib/starknet/wallet-context';
 import { useLanguage } from '@/lib/i18n/language-context';
 import { LanguageSwitcher } from '@/components/language/language-switcher';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export function Header() {
   const pathname = usePathname();
@@ -59,6 +60,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <LanguageSwitcher />
           
           {wallet ? (
