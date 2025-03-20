@@ -1,0 +1,422 @@
+[
+  {
+    "name": "Identity",
+    "type": "struct",
+    "members": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      },
+      {
+        "name": "hash",
+        "type": "felt252"
+      },
+      {
+        "name": "metadata_uri",
+        "type": "felt252"
+      },
+      {
+        "name": "verified",
+        "type": "bool"
+      },
+      {
+        "name": "timestamp",
+        "type": "u64"
+      },
+      {
+        "name": "expiration",
+        "type": "u64"
+      },
+      {
+        "name": "provider_id",
+        "type": "felt252"
+      }
+    ]
+  },
+  {
+    "name": "IdentityProvider",
+    "type": "struct",
+    "members": [
+      {
+        "name": "id",
+        "type": "felt252"
+      },
+      {
+        "name": "name",
+        "type": "felt252"
+      },
+      {
+        "name": "public_key",
+        "type": "felt252"
+      },
+      {
+        "name": "is_active",
+        "type": "bool"
+      },
+      {
+        "name": "added_timestamp",
+        "type": "u64"
+      }
+    ]
+  },
+  {
+    "name": "constructor",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "owner_address",
+        "type": "ContractAddress"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "name": "register_identity",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "hash",
+        "type": "felt252"
+      },
+      {
+        "name": "metadata_uri",
+        "type": "felt252"
+      },
+      {
+        "name": "expiration",
+        "type": "u64"
+      },
+      {
+        "name": "provider_id",
+        "type": "felt252"
+      },
+      {
+        "name": "signature_r",
+        "type": "felt252"
+      },
+      {
+        "name": "signature_s",
+        "type": "felt252"
+      },
+      {
+        "name": "message_hash",
+        "type": "felt252"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "name": "verify_identity",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "verified",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "revoke_verification",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "name": "update_identity",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "hash",
+        "type": "felt252"
+      },
+      {
+        "name": "metadata_uri",
+        "type": "felt252"
+      },
+      {
+        "name": "expiration",
+        "type": "u64"
+      },
+      {
+        "name": "provider_id",
+        "type": "felt252"
+      },
+      {
+        "name": "signature_r",
+        "type": "felt252"
+      },
+      {
+        "name": "signature_s",
+        "type": "felt252"
+      },
+      {
+        "name": "message_hash",
+        "type": "felt252"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "name": "get_identity_info",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "identity",
+        "type": "Identity"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "admin_revoke_verification",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "name": "force_expire_identity",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "name": "add_identity_provider",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "felt252"
+      },
+      {
+        "name": "name",
+        "type": "felt252"
+      },
+      {
+        "name": "public_key",
+        "type": "felt252"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "name": "deactivate_identity_provider",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "felt252"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "name": "get_identity_provider",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "felt252"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "provider",
+        "type": "IdentityProvider"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "is_trusted_provider",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "felt252"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "trusted",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "set_test_mode",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "name": "is_test_mode_enabled",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "IdentityRegistered",
+    "type": "event",
+    "keys": [],
+    "data": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      },
+      {
+        "name": "hash",
+        "type": "felt252"
+      },
+      {
+        "name": "provider_id",
+        "type": "felt252"
+      }
+    ]
+  },
+  {
+    "name": "IdentityRevoked",
+    "type": "event",
+    "keys": [],
+    "data": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      }
+    ]
+  },
+  {
+    "name": "IdentityUpdated",
+    "type": "event",
+    "keys": [],
+    "data": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      },
+      {
+        "name": "hash",
+        "type": "felt252"
+      },
+      {
+        "name": "provider_id",
+        "type": "felt252"
+      }
+    ]
+  },
+  {
+    "name": "ExpirationUpdated",
+    "type": "event",
+    "keys": [],
+    "data": [
+      {
+        "name": "address",
+        "type": "ContractAddress"
+      },
+      {
+        "name": "expiration",
+        "type": "u64"
+      }
+    ]
+  },
+  {
+    "name": "IdentityProviderAdded",
+    "type": "event",
+    "keys": [],
+    "data": [
+      {
+        "name": "id",
+        "type": "felt252"
+      },
+      {
+        "name": "name",
+        "type": "felt252"
+      }
+    ]
+  },
+  {
+    "name": "IdentityProviderDeactivated",
+    "type": "event",
+    "keys": [],
+    "data": [
+      {
+        "name": "id",
+        "type": "felt252"
+      }
+    ]
+  }
+]
