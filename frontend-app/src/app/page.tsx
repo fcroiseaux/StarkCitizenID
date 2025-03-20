@@ -261,8 +261,17 @@ export default function HomePage() {
               <div className="flex-1 flex flex-col justify-center">
                 <div className="bg-purple-50/60 dark:bg-purple-900/20 p-5 rounded-lg mb-4">
                   <strong className="block text-xs uppercase tracking-wider text-purple-800 dark:text-purple-300 mb-2 font-medium">Adresse du wallet</strong>
-                  <div className="font-mono text-sm break-all bg-white/80 dark:bg-black/20 p-2 rounded border border-purple-100 dark:border-purple-800/30">
-                    {wallet.address}
+                  <div className="font-mono text-sm overflow-hidden bg-white/80 dark:bg-black/20 p-2 rounded border border-purple-100 dark:border-purple-800/30">
+                    <div className="truncate">
+                      {wallet.address}
+                    </div>
+                    <div className="text-xs text-purple-500 dark:text-purple-400 mt-1 cursor-pointer hover:underline" 
+                         onClick={() => {
+                           navigator.clipboard.writeText(wallet.address);
+                           toast.success('Adresse copiée');
+                         }}>
+                      Copier l'adresse
+                    </div>
                   </div>
                 </div>
                 
