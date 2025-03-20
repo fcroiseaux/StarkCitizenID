@@ -12,13 +12,13 @@ import {
 interface LanguageContextType {
   language: Language;
   changeLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string) => string | string[];
 }
 
 const LanguageContext = createContext<LanguageContextType>({
   language: 'fr',
   changeLanguage: () => {},
-  t: (key: string) => key,
+  t: (key: string) => key as string,
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
@@ -40,10 +40,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   // Fonction de traduction
-  const t = (key: string): string => {
+  const t = (key: string): string | string[] => {
     const translations = language === 'fr' ? frTranslations : enTranslations;
     const value = getTranslationKey(translations, key);
-    return typeof value === 'string' ? value : key;
+    
+    // Handle different types of values
+    if (typeof value === 'string') return value;
+    if (Array.isArray(value)) return value;
+    return key;
   };
 
   return (

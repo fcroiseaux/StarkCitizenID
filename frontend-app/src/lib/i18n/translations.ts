@@ -1,6 +1,6 @@
 // Définition du type pour les traductions
 export type Translation = {
-  [key: string]: string | Translation;
+  [key: string]: string | string[] | Translation;
 };
 
 // Tableau des langues disponibles
@@ -245,13 +245,13 @@ export const enTranslations: Translation = {
 export function getTranslationKey(
   translations: Translation,
   key: string
-): string | Translation {
+): string | Translation | string[] {
   const keys = key.split('.');
-  let result: string | Translation = translations;
+  let result: string | Translation | string[] = translations;
 
   for (const k of keys) {
-    if (typeof result === 'string' || !(k in result)) {
-      return key; // Clé non trouvée
+    if (typeof result === 'string' || Array.isArray(result) || !(k in result)) {
+      return key; // Clé non trouvée ou on a atteint une feuille
     }
     result = result[k];
   }
