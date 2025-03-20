@@ -103,35 +103,35 @@ export default function HomePage() {
             <div className="flex justify-between items-center mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🇫🇷</span>
-                <CardTitle className="text-lg font-medium">France Connect</CardTitle>
+                <CardTitle className="text-lg font-medium">{t('home.fcBoxTitle')}</CardTitle>
               </div>
               {isAuthenticated && (
                 <div className="bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
-                  Connecté
+                  {t('home.fcBoxConnected')}
                 </div>
               )}
             </div>
-            <CardDescription className="text-sm opacity-80">Identité numérique officielle française</CardDescription>
+            <CardDescription className="text-sm opacity-80">{t('home.fcBoxDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="p-6 flex-1 flex flex-col justify-center" style={{ minHeight: "280px" }}>
             {isAuthenticated ? (
               <div className="space-y-5 flex-1 flex flex-col justify-center">
                 {user?.given_name && user?.family_name && (
                   <div className="bg-blue-50/60 dark:bg-blue-900/20 rounded-lg p-4">
-                    <strong className="block text-xs uppercase tracking-wider text-blue-800 dark:text-blue-300 mb-1 font-medium">Nom</strong>
+                    <strong className="block text-xs uppercase tracking-wider text-blue-800 dark:text-blue-300 mb-1 font-medium">{t('home.fcBoxName')}</strong>
                     <p className="text-xl font-medium">{user.given_name} {user.family_name}</p>
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-4">
                   {user?.birth_date && (
                     <div>
-                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Date de naissance</strong>
+                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">{t('home.fcBoxBirthDate')}</strong>
                       <p className="font-medium">{user.birth_date}</p>
                     </div>
                   )}
                   {user?.email && (
                     <div>
-                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Email</strong>
+                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">{t('home.fcBoxEmail')}</strong>
                       <p className="font-medium">{user.email}</p>
                     </div>
                   )}
@@ -140,7 +140,7 @@ export default function HomePage() {
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center py-6">
                 <div className="text-center max-w-xs mx-auto">
-                  <p className="mb-6 text-muted-foreground text-sm">Connectez-vous avec France Connect pour utiliser votre identité numérique</p>
+                  <p className="mb-6 text-muted-foreground text-sm">{t('home.fcBoxConnect')}</p>
                   <FranceConnectButton 
                     onClick={login} 
                     loading={authLoading}
@@ -158,44 +158,45 @@ export default function HomePage() {
             <div className="flex justify-between items-center mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🔗</span>
-                <CardTitle className="text-lg font-medium">StarkCitizenID</CardTitle>
+                <CardTitle className="text-lg font-medium">{t('home.idBoxTitle')}</CardTitle>
               </div>
               {isLinked && !isExpired && (
                 <div className="bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
-                  Identités liées
+                  {t('home.idBoxLinked')}
                 </div>
               )}
               {isLinked && isExpired && (
                 <div className="bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-300 text-xs px-2 py-0.5 rounded-full font-medium">
-                  Lien expiré
+                  {t('home.idBoxExpired')}
                 </div>
               )}
             </div>
-            <CardDescription className="text-sm opacity-80">Connectez vos identités sur Starknet</CardDescription>
+            <CardDescription className="text-sm opacity-80">{t('home.idBoxDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="p-6 flex-1 flex flex-col justify-center" style={{ minHeight: "280px" }}>
             {identityLoading ? (
               <div className="flex-1 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+                <p className="mt-3 text-sm text-muted-foreground">{t('home.idBoxLoading')}</p>
               </div>
             ) : isLinked ? (
               <div className="flex-1 flex flex-col justify-center">
                 <div className="bg-indigo-50/60 dark:bg-indigo-900/20 p-5 rounded-lg space-y-4">
-                  <h3 className="text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-2 uppercase tracking-wider">Informations de liaison</h3>
+                  <h3 className="text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-2 uppercase tracking-wider">{t('home.idBoxInfoTitle')}</h3>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                     <div>
-                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Statut</strong>
+                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">{t('home.idBoxStatus')}</strong>
                       <p className={`font-medium ${isExpired ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                        {isExpired ? 'Expiré' : 'Vérifié'}
+                        {isExpired ? t('home.idBoxStatusExpired') : t('home.idBoxStatusVerified')}
                       </p>
                     </div>
                     <div>
-                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Vérifié le</strong>
+                      <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">{t('home.idBoxVerifiedAt')}</strong>
                       <p className="font-medium">{formatDate(identity?.timestamp || 0)}</p>
                     </div>
                     {identity?.expiration !== 0 && (
                       <div className="col-span-2">
-                        <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Expire le</strong>
+                        <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">{t('home.idBoxExpiresAt')}</strong>
                         <p className={`font-medium ${isExpired ? 'text-red-600 dark:text-red-400' : ''}`}>
                           {formatDate(identity?.expiration || 0)}
                         </p>
@@ -206,11 +207,11 @@ export default function HomePage() {
                 <div className="mt-6">
                   {isExpired ? (
                     <Button asChild className="w-full">
-                      <Link href="/verify">Renouveler le lien</Link>
+                      <Link href="/verify">{t('home.idBoxRenew')}</Link>
                     </Button>
                   ) : (
                     <Button asChild variant="outline" className="w-full">
-                      <Link href="/dashboard">Gérer mon identité</Link>
+                      <Link href="/dashboard">{t('home.idBoxManage')}</Link>
                     </Button>
                   )}
                 </div>
@@ -224,14 +225,14 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-muted-foreground text-sm mb-5">Connectez-vous avec France Connect et votre wallet Starknet pour lier vos identités</p>
+                    <p className="text-muted-foreground text-sm mb-5">{t('home.idBoxLinkText')}</p>
                     <Button 
                       onClick={linkIdentities} 
                       disabled={!canLink || linkLoading}
                       className="w-full"
                       variant="default"
                     >
-                      {linkLoading ? 'Chargement...' : 'Lier mes identités'}
+                      {linkLoading ? t('home.idBoxLoading') : t('home.idBoxLinkButton')}
                     </Button>
                   </div>
                 </div>
@@ -246,48 +247,45 @@ export default function HomePage() {
             <div className="flex justify-between items-center mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🦄</span>
-                <CardTitle className="text-lg font-medium">Starknet Wallet</CardTitle>
+                <CardTitle className="text-lg font-medium">{t('home.walletBoxTitle')}</CardTitle>
               </div>
               {wallet && (
                 <div className="bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
-                  Connecté
+                  {t('home.walletBoxConnected')}
                 </div>
               )}
             </div>
-            <CardDescription className="text-sm opacity-80">Votre compte blockchain sur Starknet</CardDescription>
+            <CardDescription className="text-sm opacity-80">{t('home.walletBoxDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="p-6 flex-1 flex flex-col justify-center" style={{ minHeight: "280px" }}>
             {wallet ? (
               <div className="flex-1 flex flex-col justify-center">
                 <div className="bg-purple-50/60 dark:bg-purple-900/20 p-5 rounded-lg mb-4">
-                  <strong className="block text-xs uppercase tracking-wider text-purple-800 dark:text-purple-300 mb-2 font-medium">Adresse du wallet</strong>
+                  <strong className="block text-xs uppercase tracking-wider text-purple-800 dark:text-purple-300 mb-2 font-medium">{t('home.walletBoxAddress')}</strong>
                   <div className="font-mono text-sm overflow-hidden bg-white/80 dark:bg-black/20 p-2 rounded border border-purple-100 dark:border-purple-800/30">
-                    <div className="truncate">
-                      {wallet.address}
+                    <div className="flex items-center justify-between">
+                      <span className="truncate">{formatAddress(wallet.address)}</span>
+                      <div className="text-xs text-purple-500 dark:text-purple-400 ml-2 cursor-pointer hover:underline whitespace-nowrap" 
+                           onClick={() => {
+                             navigator.clipboard.writeText(wallet.address);
+                             toast.success(t('home.walletBoxCopied'));
+                           }}>
+                        {t('home.walletBoxCopy')}
+                      </div>
                     </div>
-                    <div className="text-xs text-purple-500 dark:text-purple-400 mt-1 cursor-pointer hover:underline" 
-                         onClick={() => {
-                           navigator.clipboard.writeText(wallet.address);
-                           toast.success('Adresse copiée');
-                         }}>
-                      Copier l'adresse
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {t('home.walletBoxNetwork')}: {process.env.NEXT_PUBLIC_STARKNET_NETWORK || 'testnet'}
                     </div>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Réseau</strong>
-                    <p className="font-medium capitalize">{process.env.NEXT_PUBLIC_STARKNET_NETWORK || 'testnet'}</p>
-                  </div>
-                  <div>
-                    <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Type</strong>
-                    <p className="font-medium">Starknet</p>
-                  </div>
+                <div className="mb-4">
+                  <strong className="block text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">{t('home.walletBoxType')}</strong>
+                  <p className="font-medium">{t('home.walletBoxTypeValue')}</p>
                 </div>
                 
                 <div className="mt-5">
-                  <strong className="block text-xs uppercase tracking-wider text-purple-800 dark:text-purple-300 mb-2 font-medium">Soldes</strong>
+                  <strong className="block text-xs uppercase tracking-wider text-purple-800 dark:text-purple-300 mb-2 font-medium">{t('home.walletBoxBalances')}</strong>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white/80 dark:bg-black/20 p-3 rounded border border-purple-100 dark:border-purple-800/30">
                       <div className="flex items-center gap-2">
@@ -318,7 +316,7 @@ export default function HomePage() {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                    {balancesLoading ? 'Actualisation...' : 'Actualiser'}
+                    {balancesLoading ? t('home.walletBoxRefreshing') : t('home.walletBoxRefresh')}
                   </button>
                 </div>
               </div>
@@ -335,14 +333,14 @@ export default function HomePage() {
                     />
                   </div>
                   <div>
-                    <p className="text-muted-foreground text-sm mb-5">Connectez votre portefeuille Starknet pour interagir avec vos contrats d'identité</p>
+                    <p className="text-muted-foreground text-sm mb-5">{t('home.walletBoxConnect')}</p>
                     <Button 
                       onClick={connectWallet} 
                       disabled={walletLoading}
                       className="w-full"
                       variant="default"
                     >
-                      {walletLoading ? 'Connexion...' : 'Connecter mon wallet'}
+                      {walletLoading ? t('home.walletBoxConnecting') : t('home.walletBoxConnectButton')}
                     </Button>
                   </div>
                 </div>
