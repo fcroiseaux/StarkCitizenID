@@ -37,6 +37,24 @@ export const frTranslations: Translation = {
     step2Description: "Liez votre portefeuille Starknet pour créer une connexion entre votre identité et votre compte blockchain.",
     step3Title: "Vérifiez sur la blockchain",
     step3Description: "Votre identité est vérifiée sur Starknet sans révéler vos données personnelles, permettant des applications sécurisées sur la blockchain.",
+    defiTitle: "Avantages pour la Finance Décentralisée (DeFi)",
+    defiSubtitle: "StarkCitizenID offre des avantages significatifs pour les utilisateurs et fournisseurs DeFi",
+    forUsersTitle: "Pour les utilisateurs DeFi",
+    forUsersItems: [
+      "Accès privilégié aux plateformes DeFi réservées aux utilisateurs vérifiés",
+      "Conformité réglementaire sans sacrifier la confidentialité de vos données personnelles",
+      "Meilleurs taux et limites de transaction plus élevées sur certaines plateformes",
+      "Participation à des offres exclusives réservées aux utilisateurs vérifiés"
+    ],
+    forProvidersTitle: "Pour les fournisseurs DeFi",
+    forProvidersItems: [
+      "Conformité réglementaire simplifiée via un système de vérification d'identité sécurisé",
+      "Réduction des risques liés à la fraude et au blanchiment d'argent",
+      "Possibilité d'offrir des services financiers innovants conformes aux exigences eIDAS",
+      "Expansion vers de nouveaux marchés grâce à une conformité réglementaire améliorée"
+    ],
+    privacyTitle: "Confidentialité préservée",
+    privacyDescription: "Contrairement aux solutions traditionnelles KYC, aucune donnée personnelle n'est stockée sur la blockchain ou nos serveurs. Seule la preuve cryptographique de votre vérification est enregistrée, préservant votre confidentialité tout en garantissant votre conformité."
   },
   login: {
     title: "Connexion avec FranceConnect",
@@ -136,6 +154,24 @@ export const enTranslations: Translation = {
     step2Description: "Link your Starknet wallet to create a connection between your identity and your blockchain account.",
     step3Title: "Verify On-Chain",
     step3Description: "Your identity is verified on Starknet without revealing personal data, enabling secure on-chain applications.",
+    defiTitle: "Benefits for Decentralized Finance (DeFi)",
+    defiSubtitle: "StarkCitizenID offers significant advantages for DeFi users and providers",
+    forUsersTitle: "For DeFi Users",
+    forUsersItems: [
+      "Privileged access to DeFi platforms reserved for verified users",
+      "Regulatory compliance without sacrificing personal data privacy",
+      "Better rates and higher transaction limits on certain platforms",
+      "Participation in exclusive offers reserved for verified users"
+    ],
+    forProvidersTitle: "For DeFi Providers",
+    forProvidersItems: [
+      "Simplified regulatory compliance through a secure identity verification system",
+      "Reduced risks related to fraud and money laundering",
+      "Ability to offer innovative financial services compliant with eIDAS requirements",
+      "Expansion into new markets through enhanced regulatory compliance"
+    ],
+    privacyTitle: "Privacy Preserved",
+    privacyDescription: "Unlike traditional KYC solutions, no personal data is stored on the blockchain or our servers. Only the cryptographic proof of your verification is recorded, preserving your privacy while ensuring compliance."
   },
   login: {
     title: "Sign in with France Connect",
