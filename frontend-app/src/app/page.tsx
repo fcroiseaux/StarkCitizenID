@@ -396,6 +396,17 @@ export default function HomePage() {
         </Card>
       </div>
       
+      {/* Provider Admin Link */}
+      <div className="w-full max-w-6xl mt-6">
+        <div className="flex justify-center">
+          <Button asChild variant="default" className="bg-purple-600 hover:bg-purple-700 text-white py-6 px-8 text-lg">
+            <Link href="/admin/providers">
+              🔧 Manage Identity Providers (Admin)
+            </Link>
+          </Button>
+        </div>
+      </div>
+
       {/* DeFi Section */}
       <div className="w-full max-w-5xl space-y-8 mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 rounded-lg">
         <div className="text-center space-y-2">
